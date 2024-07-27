@@ -1,5 +1,7 @@
 const fs = require("fs")
 const { ChildCategory, ParentCategory } = require("../models/categoryModel");
+const { ProductModel } = require("../models/productModel");
+const { response } = require("../routes/usersCreate");
 
 
 const childCatgoryAdd = async (req, res) => {
@@ -30,12 +32,12 @@ const childCatgoryAdd = async (req, res) => {
 const getChildCatgory = async (req, res) => {
   try {
     const allProducts = await ChildCategory.find();
-    const parentCategories = await ParentCategory.find({},"name");
+    const parentCategories = await ParentCategory.find({}, "name");
 
     const newFilter = allProducts.map(item => {
       const parentCategory = parentCategories.find(parent => parent._id.equals(item.parent_category_id));
       return {
-        _id:item._id,
+        _id: item._id,
         parent_category_name: parentCategory ? parentCategory : "Unknown",
         child_category_name: item.child_category_name,
         child_category_img: item.child_category_img,
@@ -91,7 +93,7 @@ const childCategoryDelete = async (req, res) => {
 
 const parentCategoryData = async (req, res) => {
   try {
-    const categories = await ParentCategory.find({},"name");
+    const categories = await ParentCategory.find({}, "name");
     res.status(200).json({ response: "success", response_data: categories })
   } catch {
     return res.status(500).json({ response: "failure", response_message: "Internal Server Error" });
@@ -99,4 +101,16 @@ const parentCategoryData = async (req, res) => {
   }
 }
 
-module.exports = { childCatgoryAdd, getChildCatgory, childCategoryUpdate, childCategoryDelete, parentCategoryData }
+const getSpecificCategoryProduct = async (req, res) => {
+  const { category_id } = req.body.data;
+  try {
+    const productList = await ProductModel.find({ child_category_id: category_id })
+    console.log(productList);
+    return res.status(200).json({ response: "success", response_data: productList })
+  } catch (error) {
+    return res.status(500).json({ response: "failure", response_message: error.message });
+
+  }
+}
+
+module.exports = { childCatgoryAdd, getChildCatgory, childCategoryUpdate, childCategoryDelete, parentCategoryData, getSpecificCategoryProduct }

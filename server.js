@@ -6,9 +6,9 @@ const childCategory = require("./routes/childCategory")
 const advertisment = require("./routes/advertisment")
 const sliderCom = require("./routes/slider")
 const product = require("./routes/product")
-
 const addtoCart = require("./routes/addtoCart");
 const whishList = require("./routes/wishList");
+const validateOAuthToken = require("./config/oauthMiddleware");
 
 const mongoose = require('mongoose');
 const { upload } = require("./uploadMiddleware")

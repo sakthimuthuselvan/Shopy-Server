@@ -4,6 +4,16 @@ const route = express();
 const mongoose = require('mongoose');
 const { upload } = require("../uploadMiddleware");
 
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: 'dhaxa1n5f',
+  api_key: '677585651488992',
+  api_secret: 'lUP7Ki39v9QotYncG64Ync61nNI'
+});
+
+
+
 const imageSchema = new mongoose.Schema({
   imageUrl: {
     type: String
@@ -15,9 +25,18 @@ route.post('/single/image/upload', upload.single('image'), async (req, res) => {
   console.log("req.file ", req.file);
   try {
     const imageUrl = `${req.file.path}`;
-    const newImage = new Image({ imageUrl });
-    await newImage.save();
-    res.status(201).json({ imageUrl });
+    cloudinary.uploader.upload(req.file.path, async (error, result) => {
+      if (error) {
+        return res.status(500).send(error);
+      }
+      const newImage = new Image({ imageUrl: result.secure_url });
+
+      // res.json({ imageUrl: result.secure_url });
+      await newImage.save();
+
+      res.status(201).json({ imageUrl: result.secure_url });
+
+    });
   } catch (error) {
     res.status(500).json({ response_type: "failure", error_response: 'Failed to upload image' });
   }

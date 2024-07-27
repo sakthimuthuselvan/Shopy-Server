@@ -43,14 +43,14 @@ const parentCategoryUpdate = async (req, res) => {
   const { name, category_img } = req.body;
   console.log(category_img);
   try {
-    if(!id){
+    if (!id) {
       return res.status(400).json({ response: "failure", response_message: "Invalid category image" });
-    }else if (!name) {
+    } else if (!name) {
       return res.status(400).json({ response: "failure", response_message: "Invalid category name" });
     } else if (category_img === "") {
       return res.status(400).json({ response: "failure", response_message: "Invalid category image" });
     }
-    await ParentCategory.findByIdAndUpdate(id , { name, category_img })
+    await ParentCategory.findByIdAndUpdate(id, { name, category_img })
     return res.status(200).json({ response: "success", response_message: "Category updated successfully" });
   } catch (error) {
     console.error(error);
@@ -58,18 +58,16 @@ const parentCategoryUpdate = async (req, res) => {
   }
 };
 
-const parentCategoryDelete=async(req,res)=>{
+const parentCategoryDelete = async (req, res) => {
   const { id } = req.params;
   try {
     // Find the parent category by ID and delete it
     const deletedParentCategory = await ParentCategory.findByIdAndDelete(id);
-console.log("sa ",deletedParentCategory);
+    console.log("sa ", deletedParentCategory);
     // Check if the parent category exists
     if (!deletedParentCategory) {
       return res.status(404).json({ response: "failure", response_message: "Category not found" });
     }
-    fs.unlinkSync(deletedParentCategory.category_img);
-
     return res.status(200).json({ response: "success", response_message: "Category deleted successfully" });
   } catch (error) {
     console.error(error);
